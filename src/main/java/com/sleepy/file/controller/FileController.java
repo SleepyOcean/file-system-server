@@ -1,6 +1,7 @@
 package com.sleepy.file.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sleepy.file.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ import java.util.Map;
 @CrossOrigin
 @RequestMapping("/resource/file")
 public class FileController {
-    private String rootDir = "E:\\Code\\Dev Tools\\";
+    private String rootDir = CommonUtil.getRootDir();
     private String currentPath = "FileServer";
 
     @PostMapping("/upload")
@@ -43,7 +44,7 @@ public class FileController {
             msg = "添加失败: " + e;
         }
         json.put("msg", msg);
-        return BuildJsonOfObject.buildJsonOfJsonObject(json);
+        return CommonUtil.buildJsonOfJsonObject(json);
     }
 
     @PostMapping(value = "/get")
@@ -70,26 +71,11 @@ public class FileController {
                 dirList.add(item);
             }
             result.put("dir", dirList);
+            currentPath = params.get("dir").toString();
         } else {
             // TODO 下载该文件，或返回文件内容
             result.put("content", dirList);
         }
         return result;
-    }
-
-    public static class BuildJsonOfObject {
-        public static String buildJsonOfString(String msg) {
-            JSONObject json = new JSONObject();
-            json.put("text", "请求成功");
-            json.put("msg", msg);
-            return json.toJSONString();
-        }
-
-        public static String buildJsonOfJsonObject(JSONObject jsonObj) {
-            JSONObject json = new JSONObject();
-            JSONObject o = new JSONObject();
-            json.put("data", jsonObj);
-            return json.toString();
-        }
     }
 }
