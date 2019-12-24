@@ -2,6 +2,8 @@ package com.sleepy.file.util;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -11,6 +13,32 @@ import java.util.Properties;
  * @create 2019-12-23 17:38
  **/
 public class CommonUtil {
+    public static String CATEGORY_AUDIO = "audio";
+    public static String CATEGORY_VIDEO = "video";
+    public static String CATEGORY_IMAGE = "image";
+    public static String CATEGORY_OTHER = "other";
+    public static List<String> AUDIO_SUFFIX_SET;
+    public static List<String> VIDEO_SUFFIX_SET;
+    public static List<String> IMAGE_SUFFIX_SET;
+
+    static {
+        AUDIO_SUFFIX_SET = Arrays.asList(".mp3", ".wav", ".flac", ".aac", ".wma");
+        VIDEO_SUFFIX_SET = Arrays.asList(".rmvb", ".flv", ".mpg", ".mp4", ".mkv");
+        IMAGE_SUFFIX_SET = Arrays.asList(".gif", ".jpg", ".jpeg", ".png");
+    }
+
+    public static String getCategoryBySuffix(String suffix) {
+        if (AUDIO_SUFFIX_SET.contains(suffix)) {
+            return CATEGORY_AUDIO;
+        }
+        if (VIDEO_SUFFIX_SET.contains(suffix)) {
+            return CATEGORY_VIDEO;
+        }
+        if (IMAGE_SUFFIX_SET.contains(suffix)) {
+            return CATEGORY_IMAGE;
+        }
+        return CATEGORY_OTHER;
+    }
     public static void main(String[] args) {
         Properties props = System.getProperties();
         System.out.println("Java的运行环境版本：" + props.getProperty("java.version"));
@@ -45,7 +73,7 @@ public class CommonUtil {
 
     public static String getRootDir() {
         Properties props = System.getProperties();
-        return props.getProperty("user.home");
+        return "E:\\tmp\\";
     }
 
     public static String buildJsonOfJsonObject(JSONObject jsonObj) {

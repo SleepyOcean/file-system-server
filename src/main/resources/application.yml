@@ -2,3 +2,9 @@ server:
   port: 9000
   tomcat:
     uri-encoding: UTF-8
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10485760
+      max-request-size: 104857600
