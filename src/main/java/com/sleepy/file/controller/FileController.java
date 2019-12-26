@@ -51,7 +51,7 @@ public class FileController {
             File mergeFile = new File(uploadFileMap.get(name));
             List<File> fileList = Arrays.asList(files);
             mergeFile(fileList, mergeFile);
-            chunkFileFolder.deleteOnExit();
+            CommonUtil.delFile(chunkFileFolder);
             uploadFileMap.remove(name);
         } else {
             return "未找到" + name + "文件分片";
@@ -89,6 +89,8 @@ public class FileController {
                 inputStream = files.getInputStream();
                 outputStream = new FileOutputStream(chunkFile);
                 IOUtils.copy(inputStream, outputStream);
+                inputStream.close();
+                outputStream.close();
             }
         }
         return msg;
@@ -117,10 +119,11 @@ public class FileController {
                         item.put("type", "default");
                     }
                 }
+                item.put("size", CommonUtil.getFormatFileSize(f.length()));
                 dirList.add(item);
             }
             result.put("dir", dirList);
-            currentPath = path;
+            currentPath = path + File.separator;
         } else {
             String suffix = file.getName().substring(file.getName().lastIndexOf('.'));
             if (CommonUtil.CATEGORY_IMAGE.equals(CommonUtil.getCategoryBySuffix(suffix))) {
@@ -214,5 +217,4 @@ public class FileController {
             return null;
         }
     }
-
 }

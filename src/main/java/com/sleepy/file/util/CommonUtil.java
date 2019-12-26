@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Hex;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +44,8 @@ public class CommonUtil {
         }
         return CATEGORY_OTHER;
     }
-    public static void main(String[] args) {
+
+    public static void getSystemInfo() {
         Properties props = System.getProperties();
         System.out.println("Java的运行环境版本：" + props.getProperty("java.version"));
         System.out.println("Java的运行环境供应商：" + props.getProperty("java.vendor"));
@@ -111,5 +113,53 @@ public class CommonUtil {
             return false;
         }
         return true;
+    }
+
+    public static boolean delFile(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                delFile(f);
+            }
+        }
+        return file.delete();
+    }
+
+
+    /**
+     * 格式化文件大小，输入文件大小（byte为单位），输出带单位的文件大小，如 10240 => 10M
+     *
+     * @param size
+     * @return
+     */
+    public static String getFormatFileSize(double size) {
+        double kiloByte = size / 1024;
+        if (kiloByte < 1) {
+            return size + "Byte(s)";
+        }
+
+        double megaByte = kiloByte / 1024;
+        if (megaByte < 1) {
+            BigDecimal result1 = BigDecimal.valueOf(kiloByte);
+            return result1.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB";
+        }
+
+        double gigaByte = megaByte / 1024;
+        if (gigaByte < 1) {
+            BigDecimal result2 = BigDecimal.valueOf(megaByte);
+            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+        }
+
+        double teraBytes = gigaByte / 1024;
+        if (teraBytes < 1) {
+            BigDecimal result3 = BigDecimal.valueOf(gigaByte);
+            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
+        }
+        BigDecimal result4 = new BigDecimal(teraBytes);
+        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
     }
 }
