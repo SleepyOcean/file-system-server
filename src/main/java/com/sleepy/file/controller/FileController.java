@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/resource/file")
 public class FileController {
     private String rootDir = CommonUtil.getRootDir();
+    private String resourceDir = CommonUtil.getRootDir();
     private String currentPath = "FileServer";
     private static String CHUNK_SUFFIX = ".chunk";
     private ConcurrentHashMap<String, String> uploadFileMap = new ConcurrentHashMap<>(4);
@@ -134,9 +135,32 @@ public class FileController {
                 getAudioStream(request, response, file);
                 return null;
             }
-            result.put("content", dirList);
         }
         return result;
+    }
+
+    @GetMapping(value = "/{fileName}")
+    public void getDir(HttpServletRequest request, HttpServletResponse response, @PathVariable("fileName") String name) throws IOException {
+        String dir = resourceDir + name;
+        File file = new File(dir);
+        String suffix = file.getName().substring(file.getName().lastIndexOf('.'));
+        if (CommonUtil.CATEGORY_IMAGE.equals(CommonUtil.getCategoryBySuffix(suffix))) {
+            getImageStream(response, dir, "1");
+        }
+        if (CommonUtil.CATEGORY_AUDIO.equals(CommonUtil.getCategoryBySuffix(suffix))) {
+            getAudioStream(request, response, file);
+        }
+
+        // 设置response的Header
+        response.addHeader("Content-Length", "" + file.length());
+        response.setContentType("application/x-font-ttf");
+
+        InputStream fis = new BufferedInputStream(new FileInputStream(file));
+        byte[] buffer = new byte[fis.available()];
+        OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+        toClient.write(buffer);
+        toClient.flush();
+        toClient.close();
     }
 
     private void getAudioStream(HttpServletRequest request, HttpServletResponse response, File file) throws IOException {
