@@ -181,26 +181,17 @@ public class FileController {
     }
 
     private void getImageStream(HttpServletResponse response, String dir, String ratio) {
-        OutputStream outputStream = null;
-        try {
+        try (OutputStream outputStream = response.getOutputStream()) {
             response.setContentType("image/jpeg");
             response.addHeader("Connection", "keep-alive");
             response.addHeader("Cache-Control", "max-age=604800");
-            outputStream = response.getOutputStream();
             Thumbnails.of(dir).scale(Float.parseFloat(ratio)).outputFormat("jpeg").toOutputStream(outputStream);
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             log.error("图片压缩失败，ratio值应为float类型，如ratio=0.25f(缩小至0.25倍)，失败URL：{}", dir);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("{} 获取图片失败！{} {}", "/compress请求", e.getMessage(), dir);
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException e) {
-                log.error("{} 流关闭失败！{}", "/compress请求", e.getMessage());
-            }
         }
     }
 
